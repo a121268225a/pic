@@ -1,8 +1,14 @@
 {
   "builds": [
-    { "src": "index.js", "use": "@vercel/node" }
+    {
+      "src": "index.js",
+      "use": "@vercel/node"
+    }
   ],
   "routes": [
-    { "src": "/random.jpg", "dest": "/api/random" }
+    {
+      "src": "/random.jpg",
+      "dest": "/index.js"
+    }
   ]
 }
