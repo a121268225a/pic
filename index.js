@@ -5,21 +5,20 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 確保 Vercel 可以找到靜態文件
+// 靜態檔案路徑設定，讓 Vercel 能夠正確讀取 public 資料夾
 app.use(express.static('public'));
 
-const IMAGE_DIR = path.join(__dirname, 'public', 'images');
+// 動態路由來根據網址選擇不同資料夾的圖片
+app.get('/:folder.jpg', (req, res) => {
+    const folderName = req.params.folder;
+    const imageDir = path.join(__dirname, 'public', folderName);
 
-app.get('/random.jpg', (req, res) => {
-    fs.readdir(IMAGE_DIR, (err, files) => {
-        if (err) {
-            return res.status(500).send(`Error reading directory: ${err.message}`);
-        }
-        if (files.length === 0) {
-            return res.status(404).send('No images found in the directory.');
+    fs.readdir(imageDir, (err, files) => {
+        if (err || files.length === 0) {
+            return res.status(404).send(`No images found in the folder: ${folderName}`);
         }
         const randomFile = files[Math.floor(Math.random() * files.length)];
-        res.sendFile(path.join(IMAGE_DIR, randomFile));
+        res.sendFile(path.join(imageDir, randomFile));
     });
 });
 
