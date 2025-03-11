@@ -5,19 +5,28 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 靜態檔案路徑設定，讓 Vercel 能夠正確讀取 public 資料夾
+// 允許讀取 public 內的靜態檔案
 app.use(express.static('public'));
 
-// 動態路由來根據網址選擇不同資料夾的圖片
+// 支援不同的資料夾，例如 /images1.jpg 讀取 public/images1/ 的圖片
 app.get('/:folder.jpg', (req, res) => {
     const folderName = req.params.folder;
     const imageDir = path.join(__dirname, 'public', folderName);
 
     fs.readdir(imageDir, (err, files) => {
         if (err || files.length === 0) {
-            return res.status(404).send(`No images found in the folder: ${folderName}`);
+            return res.status(404).send(`No images found in folder: ${folderName}`);
         }
-        const randomFile = files[Math.floor(Math.random() * files.length)];
+
+        // 只選取圖片檔案（.jpg, .png, .gif）
+        const imageFiles = files.filter(file => /\.(jpg|jpeg|png|gif)$/i.test(file));
+
+        if (imageFiles.length === 0) {
+            return res.status(404).send(`No valid image files in folder: ${folderName}`);
+        }
+
+        // 隨機選擇一張圖片
+        const randomFile = imageFiles[Math.floor(Math.random() * imageFiles.length)];
         res.sendFile(path.join(imageDir, randomFile));
     });
 });
