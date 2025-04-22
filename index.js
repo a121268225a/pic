@@ -27,7 +27,6 @@ app.get('/:folder.jpg', (req, res) => {
 
         // 隨機選擇一張圖片
         const randomFile = imageFiles[Math.floor(Math.random() * imageFiles.length)];
-        res.setHeader('Cache-Control', 'public, max-age=86400');
         res.sendFile(path.join(imageDir, randomFile));
     });
 });
